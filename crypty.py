@@ -5,6 +5,8 @@ Turbo crypto module
 
 """
 
+import math
+
 def stringToBase64(string):
 	return hexToBase64(stringToHex(string))
 
@@ -17,7 +19,7 @@ def hexToBase64(h):
 	# 0 - take first four bits; 1 - take two bits; 2 - take last four bits;
 	state = 0
 
-	base64 = ""
+	base64String = ""
 
 	base = 0
 	buffer = 0
@@ -32,7 +34,7 @@ def hexToBase64(h):
 
 			base = (base << 2) | (buffer >> 2)
 
-			base64 += baseChars[base]
+			base64String += baseChars[base]
 			
 			base = 0
 
@@ -44,7 +46,7 @@ def hexToBase64(h):
 
 			base = buffer | byte
 
-			base64 += baseChars[base]
+			base64String += baseChars[base]
 
 			base = 0
 			buffer = 0
@@ -53,7 +55,7 @@ def hexToBase64(h):
 		if state > 2:
 			state = 0
 
-	return base64
+	return base64String
 
 def hexToString(txt):
 	string = ""
@@ -120,6 +122,32 @@ def xorBytes(bytes1, bytes2):
 			xorValues.append( bytes1[i % len(bytes1)] ^ bytes2[i] )
 
 	return bytearray(xorValues)
+
+def getEntropy(bytes1):
+	# Character occurance probability by its frequency
+
+	d = {
+		'a':0.082, 'b':0.015, 'c':0.028, 'd':0.043, 'e':0.13, 'f':0.022, 'g':0.02,
+		'h':0.061, 'i':0.07, 'j':0.0015, 'k':0.0077, 'l':0.04, 'm':0.024, 'n':0.067,
+		'o':0.075, 'p':0.019, 'q':0.00095, 'r':0.06, 's':0.063, 't':0.091,
+		'u':0.028, 'v':0.0098, 'w':0.024, 'x':0.0015, 'y':0.02, 'z':0.00074,
+		' ':0.05
+		}
+
+	entropy = 0
+	for value in bytes1:
+		p = 0
+		val = chr(value).lower()
+		if val in d.keys():
+			p = 1/d[val]
+		else:
+			p = 1/0.00001
+		
+		entropy += p * math.log(p, 2)
+
+	entropy /= math.log(len(bytes1), 2)
+
+	return entropy
 
 def testTypeTranslation():
 	testPhrase = "This is a typ3 tr4ns14t10n t35t"
