@@ -80,13 +80,15 @@ def stringToHex(txt):
 def hexToBytes(h):
 	tmp = []
 	for i in range(0, len(h), 2):
-		tmp.append(int(h[i], 16)<<4 | int(h[i+1], 16))
+		left = h[i]
+		right = "0" if i == len(h)-1 else h[i+1]
+		tmp.append(int(left, 16)<<4 | int(right, 16))
 
 	return bytearray(tmp)
 
-def bytesToHex(barr):	
+def bytesToHex(bytes1):	
 	h = ""
-	for value in barr:
+	for value in bytes1:
 		tmp = hex(value)[2:]
 		if len(tmp)%2 == 1:
 			tmp = "0" + tmp
@@ -97,19 +99,24 @@ def bytesToHex(barr):
 def stringToBytes(txt, encoding="utf-8"):
 	return bytearray(txt, encoding)
 
-def bytesToString(barr):
+def bytesToString(bytes1):
 	txt = ""
-	for val in barr:
+	for val in bytes1:
 		txt += chr(val)
 
 	return txt
 
+def intToBytes(number1):
+	return hexToBytes(hex(number1)[2:])
+
+def bytesToInt(bytes1):
+	return int(bytesToHex(bytes1), 16)
+
 def xorStrings(string1, string2, encoding="utf-8"):
-	bytes1 = bytearray(string1, encoding)
-	bytes2 = bytearray(string2, encoding)
+	bytes1 = stringToBytes(string1, encoding)
+	bytes2 = stringToBytes(string2, encoding)
 
 	return xorBytes(bytes1, bytes2)
-
 
 def xorBytes(bytes1, bytes2):
 	xorValues = []
@@ -123,8 +130,7 @@ def xorBytes(bytes1, bytes2):
 
 	return bytearray(xorValues)
 
-def getEntropy(bytes1):
-	# Character occurance probability by its frequency
+def getEnglishScore(bytes1):
 
 	d = {
 		'a':0.082, 'b':0.015, 'c':0.028, 'd':0.043, 'e':0.13, 'f':0.022, 'g':0.02,
@@ -134,28 +140,66 @@ def getEntropy(bytes1):
 		' ':0.05
 		}
 
+	score = 0
+	for value in bytes1:
+		char = chr(value).lower()
+		if char in d.keys():
+			p = 1/d[char]
+		else:
+			p = 1/(0.0001)
+
+		score += p * math.log(p, 2)
+
+	score /= math.log(len(bytes1), 2)
+
+	return score
+
+def getShannonEntropy(bytes1):
+
+	d = {}
+
+	for value in bytes1:
+		if value not in d.keys():
+			d[value] = 1/len(bytes1)
+		else:
+			d[value] += 1/len(bytes1)
+	
 	entropy = 0
 	for value in bytes1:
-		p = 0
-		val = chr(value).lower()
-		if val in d.keys():
-			p = 1/d[val]
-		else:
-			p = 1/0.00001
-		
+		p = 1/d[value]
 		entropy += p * math.log(p, 2)
-
+	
 	entropy /= math.log(len(bytes1), 2)
 
 	return entropy
 
-def testTypeTranslation():
+def countBitsInInt(number1):
+    count = 0
+    while number1 > 0:
+        number1 &= number1 - 1
+        count += 1
+
+    return count
+
+def getHammingDistance(bytes1, bytes2):
+
+    if len(bytes1) != len(bytes2):
+        raise ValueError("Byte sequences have unequal lenght!")
+
+    xorNumber = int(bytesToHex(bytes1), 16) ^ int(bytesToHex(bytes2), 16)
+    hammingDistance = countBitsInInt(xorNumber)
+    
+    return hammingDistance
+
+def testTypeConvertion():
 	testPhrase = "This is a typ3 tr4ns14t10n t35t"
 	testHex = "654bdb3a84663e6ffcabd68100000148"
+	testNumber = 1234565
 
 	assert(testPhrase == hexToString(stringToHex(testPhrase)))
 	assert(testHex == bytesToHex(hexToBytes(testHex)))
 	assert(testPhrase == bytesToString(stringToBytes(testPhrase)))
+	assert(testNumber == bytesToInt(intToBytes(testNumber)))
 
 def testXorOperation():
 	testPhrase1 = "This is a tęst phrase."
@@ -166,12 +210,18 @@ def testBase64encoding():
 	testPhrase = "This is a test phrase for my base64 encoder."
 	assert(hexToBase64(stringToHex(testPhrase)) == stringToBase64(testPhrase) == bytesToBase64(bytearray(testPhrase, "utf-8")))	
 
+def testHammingDistance():
+	testPhrase1 = stringToBytes("this is a test")
+	testPhrase2 = stringToBytes("wokka wokka!!!")
+	assert(getHammingDistance(testPhrase1, testPhrase2) == 37)
+
 def main():
 	print("MaxWarman's Cryptopals functions module")
 
-	testTypeTranslation()
+	testTypeConvertion()
 	testXorOperation()
 	testBase64encoding()
+	testHammingDistance()
 
 	print("Tests successful")
 
