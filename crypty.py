@@ -128,7 +128,6 @@ def xorBytes(bytes1, bytes2):
 		else:
 			xorValues.append( bytes1[i % len(bytes1)] ^ bytes2[i] )
 
-
 	return bytearray(xorValues)
 
 def getEnglishScore(bytes1):
