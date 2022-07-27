@@ -7,138 +7,67 @@ Turbo crypto module
 
 import math
 
-def stringToBase64(string):
-	return hexToBase64(stringToHex(string))
+def stringToBase64(string1):
+	return bytesToBase64(stringToBytes(string1))
 
-def bytesToBase64(barr):
-	return hexToBase64(bytesToHex(barr))
+def hexToBase64(hex1):
+	return bytesToBase64(hexToBytes(hex1))
 
-def hexToBase64(h):
-	baseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
-
-	# 0 - take first four bits; 1 - take two bits; 2 - take last four bits;
-	state = 0
-
-	base64String = ""
-
-	base = 0
-	buffer = 0
-
-	for char in h:
-		byte = int(char, 16)
-		if state == 0:
-			base = byte
-
-		elif state == 1:
-			buffer = byte
-
-			base = (base << 2) | (buffer >> 2)
-
-			base64String += baseChars[base]
-			
-			base = 0
-
-		else:
-			# Get rid of two left most bits
-			buffer &= ~((1 << 3) | (1 << 2))
-			buffer = (buffer << 4)
-
-
-			base = buffer | byte
-
-			base64String += baseChars[base]
-
-			base = 0
-			buffer = 0
-
-		state += 1
-		if state > 2:
-			state = 0
-
-	return base64String
-
-def newBytesToBase64(bytes1):
-	baseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+def bytesToBase64(bytes1):
 
 	"""
 		1)	[********][*********][*********]
-			{******} {**|****} {****|**} {*******}	<- przetwarzane normalnie
+			{******} {**|****} {****|**} {*******}	<- no padding added
 
 		2)  [********][*********][00000000]
-			{******} {**|****} {****|00} {000000}	<- do outputu dodawane jest '='
+			{******} {**|****} {****|00} {000000}	<- padding '=' added to the output
 
 		3)	[********][000000000][000000000]	
-			{******} {**|0000} {0000|00} {000000}	<- do outputu dodawane jest '=='
+			{******} {**|0000} {0000|00} {000000}	<- padding '==' added to the output
 
-
-			[01101110][01110100][00000000]
-			{011011} {10|0111} {0100|00} {0000000}
-				^b 		^n 			^Q		^=
-
-			[01101110][01110100][01110100]
-			{011011} {10|0111} {0100|01} {110100}
-				^b 		^n 			^R		^0
 	"""
+	baseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 	base64String = ""
 
 	for i in range(0, len(bytes1), 3):
 
-		"""
-		state = (len(bytes1) - 1 - i) % 3 	# 2 - normal, 1 - padding '=', 0 - padding '==' 
+		state = (len(bytes1) - 1 - i) 	# 2+ - normal, 1 - padding '=', 0 - padding '==' 
+		padding = ""
 
 		octet1 = bytes1[i]
 
-		if state == 2:
+		if state != 0:
 			octet2 = bytes1[i+1]
 		else:
 			octet2 = 0
-		
-		if state <= 1:
-			octet2 = bytes1[i+1]
-		else:
-			octet2 = 0
-		"""
+			padding += "="
 
-		octet1 = bytes1[i]
-		if len(bytes1) - 1 - i == 0:
-			octet2 = 0
-			octet3 = 0
-
-			padding = "=="
-
-			index = (octet1 >> 2)
-			base64String += baseChars[index]
-			index = (octet1 & ((1 << 1) | (1 << 0)) ) << 4 | (octet2 >> 4)
-			base64String += baseChars[index]
-			base64String += padding
-
-		elif len(bytes1) - 1 - i == 1:
-			octet2 = bytes1[i+1]
-			octet3 = 0
-
-			padding = "="
-
-			index = (octet1 >> 2)
-			base64String += baseChars[index]
-			index = (octet1 & ((1 << 1) | (1 << 0)) ) << 4 | (octet2 >> 4)
-			base64String += baseChars[index]
-			index = (octet2 & ((1 << 3)|(1 << 2)|(1 << 1)|(1 << 0)) ) << 2 | (octet3 >> 6)
-			base64String += baseChars[index]
-			base64String += padding
-
-		else:
-			octet2 = bytes1[i+1]
+		if state >= 2:
 			octet3 = bytes1[i+2]
+		else:
+			octet3 = 0
+			padding += "="
 
-			index = (octet1 >> 2)
-			base64String += baseChars[index]
-			index = (octet1 & ((1 << 1) | (1 << 0)) ) << 4 | (octet2 >> 4)
-			base64String += baseChars[index]
-			index = (octet2 & ((1 << 3)|(1 << 2)|(1 << 1)|(1 << 0)) ) << 2 | (octet3 >> 6)
-			base64String += baseChars[index]
-			index = (octet3 & ((1 << 5)|(1 << 4)|(1 << 3)|(1 << 2)|(1 << 1)|(1 << 0)))
-			base64String += baseChars[index]
+		index = (octet1 >> 2)
+		base64String += baseChars[index]
+
+		index = (octet1 & ((1 << 1) | (1 << 0)) ) << 4 | (octet2 >> 4)
+		base64String += baseChars[index]
+		
+		if state == 0:
+			base64String += padding
+			continue
+
+		index = (octet2 & ((1 << 3)|(1 << 2)|(1 << 1)|(1 << 0)) ) << 2 | (octet3 >> 6)
+		base64String += baseChars[index]
+		
+		if state == 1:
+			base64String += padding
+			continue
+		
+		index = (octet3 & ((1 << 5)|(1 << 4)|(1 << 3)|(1 << 2)|(1 << 1)|(1 << 0)))
+		base64String += baseChars[index]
 
 	return base64String
 
@@ -162,11 +91,11 @@ def stringToHex(txt):
 			h += tmp
 	return h
 
-def hexToBytes(h):
+def hexToBytes(hex1):
 	tmp = []
-	for i in range(0, len(h), 2):
-		left = h[i]
-		right = "0" if i == len(h)-1 else h[i+1]
+	for i in range(0, len(hex1), 2):
+		left = hex1[i]
+		right = "0" if i == len(hex1)-1 else hex1[i+1]
 		tmp.append(int(left, 16)<<4 | int(right, 16))
 
 	return bytearray(tmp)
@@ -293,7 +222,7 @@ def testXorOperation():
 
 def testBase64encoding():
 	testPhrase = "This is a test phrase for my base64 encoder."
-	assert(hexToBase64(stringToHex(testPhrase)) == stringToBase64(testPhrase) == bytesToBase64(bytearray(testPhrase, "utf-8")))	
+	assert(stringToBase64(testPhrase) == bytesToBase64(bytearray(testPhrase, "utf-8")) == hexToBase64(stringToHex(testPhrase)) == "VGhpcyBpcyBhIHRlc3QgcGhyYXNlIGZvciBteSBiYXNlNjQgZW5jb2Rlci4=")	
 
 def testHammingDistance():
 	testPhrase1 = stringToBytes("this is a test")
@@ -312,9 +241,4 @@ def main():
 
 
 if __name__ == "__main__":
-	#main()
-	a = "Like what? You're writing some sick programming my cousin!"
-	b = stringToBytes(a)
-	c = newBytesToBase64(b)
-	print(c)
-	assert(c == "TGlrZSB3aGF0PyBZb3UncmUgd3JpdGluZyBzb21lIHNpY2sgcHJvZ3JhbW1pbmcgbXkgY291c2luIQ==")
+	main()
