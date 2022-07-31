@@ -168,6 +168,18 @@ def getEnglishScore(bytes1):
 
 	return score
 
+def rot13(string1, key=13):
+	resultRot13 = ""
+	alphabet = "qwertyuiopasdfghjklzxcvbnm"
+	for char in string1:
+		if char in alphabet.lower():
+			resultRot13 += chr( (ord(char) - ord("a") + key) % len(alphabet) + ord("a") )
+		elif char in alphabet.upper():
+			resultRot13 += chr( (ord(char) - ord("A") + key) % len(alphabet) + ord("A") )
+		else:
+			resultRot13 += char
+	return resultRot13
+
 def getShannonEntropy(bytes1):
 
 	d = {}
