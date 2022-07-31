@@ -127,7 +127,10 @@ def intToBytes(number1):
 	return hexToBytes(hex(number1)[2:])
 
 def intToHex(number1):
-	return hex(number1)[2:]
+	h = hex(number1)[2:]
+	if len(h)%2 != 0:
+		h = "0" + h
+	return h
 
 def bytesToInt(bytes1):
 	return int(bytesToHex(bytes1), 16)
