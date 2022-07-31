@@ -57,14 +57,14 @@ def bytesToBase64(bytes1):
 		
 		if state == 0:
 			base64String += padding
-			continue
+			break
 
 		index = (octet2 & ((1 << 3)|(1 << 2)|(1 << 1)|(1 << 0)) ) << 2 | (octet3 >> 6)
 		base64String += baseChars[index]
 		
 		if state == 1:
 			base64String += padding
-			continue
+			break
 		
 		index = (octet3 & ((1 << 5)|(1 << 4)|(1 << 3)|(1 << 2)|(1 << 1)|(1 << 0)))
 		base64String += baseChars[index]
@@ -253,6 +253,16 @@ def testBase64encoding():
 	testPhrase = "This is a test phrase for my base64 encoder."
 	assert(stringToBase64(testPhrase) == bytesToBase64(bytearray(testPhrase, "utf-8")) == hexToBase64(stringToHex(testPhrase)) == "VGhpcyBpcyBhIHRlc3QgcGhyYXNlIGZvciBteSBiYXNlNjQgZW5jb2Rlci4=")	
 
+def testRot13():
+	testPhrase = "This is a test phrase for my rot13 encrypter."
+	assert(rot13("This is a test phrase for my base64 encoder.") == "Guvf vf n grfg cuenfr sbe zl onfr64 rapbqre.")
+
+def testGCD():
+	testNumber1 = 1234567891011121314151617181920212223242526272829
+	testNumber2 = 89798763754892653453379597352537489494736
+	assert(getGCD(testNumber1, testNumber2) == 3)
+
+
 def testHammingDistance():
 	testPhrase1 = stringToBytes("this is a test")
 	testPhrase2 = stringToBytes("wokka wokka!!!")
@@ -264,6 +274,8 @@ def main():
 	testTypeConvertion()
 	testXorOperation()
 	testBase64encoding()
+	testRot13()
+	testGCD()
 	testHammingDistance()
 
 	print("Tests successful")
