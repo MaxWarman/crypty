@@ -92,10 +92,13 @@ def stringToHex(txt):
 	return h
 
 def hexToBytes(hex1):
+	if len(hex1) % 2 != 0:
+		hex1 = "0" + hex1
+
 	tmp = []
 	for i in range(0, len(hex1), 2):
 		left = hex1[i]
-		right = "0" if i == len(hex1)-1 else hex1[i+1]
+		right = hex1[i+1]
 		tmp.append(int(left, 16)<<4 | int(right, 16))
 
 	return bytearray(tmp)
@@ -122,6 +125,9 @@ def bytesToString(bytes1):
 
 def intToBytes(number1):
 	return hexToBytes(hex(number1)[2:])
+
+def intToHex(number1):
+	return hex(number1)[2:]
 
 def bytesToInt(bytes1):
 	return int(bytesToHex(bytes1), 16)
@@ -179,6 +185,14 @@ def rot13(string1, key=13):
 		else:
 			resultRot13 += char
 	return resultRot13
+
+def getGCD(number1, number2):
+	while number2 != 0:
+		tmp = number2
+		number2 = number1 % number2
+		number1 = tmp
+
+	return number1
 
 def getShannonEntropy(bytes1):
 
