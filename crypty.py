@@ -52,33 +52,76 @@ def bytesToBase64(bytes1):
 		index = (octet1 >> 2)
 		base64String += baseChars[index]
 
-		index = (octet1 & ((1 << 1) | (1 << 0)) ) << 4 | (octet2 >> 4)
+		index = (octet1 & (1<<1 | 1<<0) ) << 4 | (octet2 >> 4)
 		base64String += baseChars[index]
 		
 		if state == 0:
 			base64String += padding
 			break
 
-		index = (octet2 & ((1 << 3)|(1 << 2)|(1 << 1)|(1 << 0)) ) << 2 | (octet3 >> 6)
+		index = (octet2 & (1<<3 | 1<<2 | 1<<1 | 1<<0) ) << 2 | (octet3 >> 6)
 		base64String += baseChars[index]
 		
 		if state == 1:
 			base64String += padding
 			break
 		
-		index = (octet3 & ((1 << 5)|(1 << 4)|(1 << 3)|(1 << 2)|(1 << 1)|(1 << 0)))
+		index = (octet3 & (1<<5 | 1<<4 | 1<<3 | 1<<2 | 1<<1 | 1<<0))
 		base64String += baseChars[index]
 
 	return base64String
 
-def hexToString(txt):
+def base64ToBytes(string1):
+	baseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+	resultBytes = []
+
+	for i in range(0, len(string1), 4):
+		sextet1 = sextet2 = sextet3 = sextet4 = None
+		for ind, char in enumerate(baseChars):
+			if string1[i] == char:
+				sextet1 = ind
+			if string1[i+1] == char:
+				sextet2 = ind
+			if string1[i+2] == char:
+				sextet3 = ind
+			if string1[i+3] == char:
+				sextet4 = ind
+
+		octet1 = (sextet1 << 2) | (sextet2 >> 4)
+		resultBytes.append(octet1)
+		
+		if sextet3 == None:
+			break
+		else:
+			octet2 = ((sextet2 & (1<<3 | 1<<2 | 1<<1 | 1<<0)) << 4) | (sextet3 >> 2)
+
+		resultBytes.append(octet2)
+
+		if sextet4 == None:
+			break
+		else:
+			octet3 = ((sextet3 & (1<<1 | 1<<0)) << 6) | sextet4
+
+		resultBytes.append(octet3)
+
+	return bytearray(resultBytes)
+
+def base64ToHex(string1):
+	return bytesToHex(base64ToBytes(string1))
+
+def base64ToString(string1):
+	return bytesToString(base64ToBytes(string1))
+
+def hexToString(string1):
+	txt = string1
 	string = ""
 	for i in range(0, len(txt), 2):
 		string += chr( int(f"{txt[i]}{txt[i+1]}", 16) )
 
 	return string
 
-def stringToHex(txt):
+def stringToHex(string1):
+	txt = string1
 	h = ""
 	for char in txt:
 		barr = bytearray(char, "utf-8")
@@ -251,7 +294,13 @@ def testXorOperation():
 
 def testBase64encoding():
 	testPhrase = "This is a test phrase for my base64 encoder."
-	assert(stringToBase64(testPhrase) == bytesToBase64(bytearray(testPhrase, "utf-8")) == hexToBase64(stringToHex(testPhrase)) == "VGhpcyBpcyBhIHRlc3QgcGhyYXNlIGZvciBteSBiYXNlNjQgZW5jb2Rlci4=")	
+	correctEncoding = "VGhpcyBpcyBhIHRlc3QgcGhyYXNlIGZvciBteSBiYXNlNjQgZW5jb2Rlci4="
+	assert(stringToBase64(testPhrase) == bytesToBase64(bytearray(testPhrase, "utf-8")) == hexToBase64(stringToHex(testPhrase)) == correctEncoding)	
+
+def testBase64decoding():
+	testPhrase = "This is a test phrase for my base64 decoder."
+	correctEncoding = "VGhpcyBpcyBhIHRlc3QgcGhyYXNlIGZvciBteSBiYXNlNjQgZGVjb2Rlci4="
+	assert(base64ToString(correctEncoding) == testPhrase)		
 
 def testRot13():
 	testPhrase = "This is a test phrase for my rot13 encrypter."
@@ -269,11 +318,12 @@ def testHammingDistance():
 	assert(getHammingDistance(testPhrase1, testPhrase2) == 37)
 
 def main():
-	print("MaxWarman's Cryptopals functions module")
+	print("MaxWarman's crypto tools module")
 
 	testTypeConvertion()
 	testXorOperation()
 	testBase64encoding()
+	testBase64decoding()
 	testRot13()
 	testGCD()
 	testHammingDistance()
