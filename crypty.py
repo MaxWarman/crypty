@@ -1,7 +1,7 @@
 """
 
 Author: MaxWarman
-Turbo crypto module
+Description: My crypto tools module
 
 """
 
@@ -222,7 +222,7 @@ def getEnglishScore(bytes1):
 
 def rot13(string1, key=13):
 	resultRot13 = ""
-	alphabet = "qwertyuiopasdfghjklzxcvbnm"
+	alphabet = "abcdefghijklmnopqrstuvwxyz"
 	for char in string1:
 		if char in alphabet.lower():
 			resultRot13 += chr( (ord(char) - ord("a") + key) % len(alphabet) + ord("a") )
