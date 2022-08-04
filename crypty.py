@@ -156,8 +156,8 @@ def bytesToHex(bytes1):
 
 	return h	
 
-def stringToBytes(txt, encoding="utf-8"):
-	return bytearray(txt, encoding)
+def stringToBytes(string1, encoding="utf-8"):
+	return bytearray(string1, encoding)
 
 def bytesToString(bytes1):
 	txt = ""
