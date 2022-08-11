@@ -240,6 +240,20 @@ def getGCD(number1, number2):
 
 	return number1
 
+def getGcdCoefficients(number1, number2):
+
+	if number2 == 0:
+		a = 1
+		b = 0
+		return a, b
+
+	a, b = getGcdCoefficients(number2, number1%number2)
+	buffer = b
+	b = a - number1//number2 * b
+	a = buffer
+
+	return a, b
+
 def getShannonEntropy(bytes1):
 
 	d = {}
@@ -311,6 +325,12 @@ def testGCD():
 	testNumber2 = 89798763754892653453379597352537489494736
 	assert(getGCD(testNumber1, testNumber2) == 3)
 
+def testGcdCoefficients():
+	testNumber1 = 1234567891011121314151617181920212223242526272829
+	testNumber2 = 89798763754892653453379597352537489494736
+	coefficient1, coefficient2 = getGcdCoefficients(testNumber1, testNumber2)
+	assert(getGCD(testNumber1, testNumber2) == coefficient1 * testNumber1 + coefficient2 * testNumber2)
+
 
 def testHammingDistance():
 	testPhrase1 = stringToBytes("this is a test")
@@ -326,6 +346,7 @@ def main():
 	testBase64decoding()
 	testRot13()
 	testGCD()
+	testGcdCoefficients()
 	testHammingDistance()
 
 	print("Tests successful")
