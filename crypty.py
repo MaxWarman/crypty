@@ -258,7 +258,7 @@ def getMultiplicativeInverse(number1, prime):
 	if number1 % prime != 0:
 		return number1 ** (prime-2) % prime
 	else:
-		
+		return None
 
 def getShannonEntropy(bytes1):
 
