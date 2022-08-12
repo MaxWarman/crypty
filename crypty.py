@@ -254,6 +254,12 @@ def getGcdCoefficients(number1, number2):
 
 	return a, b
 
+def getMultiplicativeInverse(number1, prime):
+	if number1 % prime != 0:
+		return number1 ** (prime-2) % prime
+	else:
+		
+
 def getShannonEntropy(bytes1):
 
 	d = {}
