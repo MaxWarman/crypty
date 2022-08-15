@@ -256,7 +256,7 @@ def getGcdCoefficients(number1, number2):
 
 def getMultiplicativeInverse(number1, prime):
 	if number1 % prime != 0:
-		return number1 ** (prime-2) % prime
+		return pow(number1, prime-2, prime)
 	else:
 		return None
 
@@ -336,7 +336,6 @@ def testGcdCoefficients():
 	testNumber2 = 89798763754892653453379597352537489494736
 	coefficient1, coefficient2 = getGcdCoefficients(testNumber1, testNumber2)
 	assert(getGCD(testNumber1, testNumber2) == coefficient1 * testNumber1 + coefficient2 * testNumber2)
-
 
 def testHammingDistance():
 	testPhrase1 = stringToBytes("this is a test")
