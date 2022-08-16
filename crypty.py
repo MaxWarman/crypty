@@ -260,6 +260,10 @@ def getMultiplicativeInverse(number1, prime):
 	else:
 		return None
 
+def getLegendreSymbol(number1, prime):
+	legendreSymbol = pow(number1, (prime-1)//2, prime)
+	return legendreSymbol 
+
 def getShannonEntropy(bytes1):
 
 	d = {}
