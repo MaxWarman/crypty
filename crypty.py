@@ -328,7 +328,7 @@ def testBase64decoding():
 
 def testRot13():
 	testPhrase = "This is a test phrase for my rot13 encrypter."
-	assert(rot13("This is a test phrase for my base64 encoder.") == "Guvf vf n grfg cuenfr sbe zl onfr64 rapbqre.")
+	assert(rot13(testPhrase) == "Guvf vf n grfg cuenfr sbe zl ebg13 rapelcgre.")
 
 def testGCD():
 	testNumber1 = 1234567891011121314151617181920212223242526272829
@@ -348,6 +348,7 @@ def testHammingDistance():
 
 def main():
 	print("MaxWarman's crypto tools module")
+	print("Running tests...")
 
 	testTypeConvertion()
 	testXorOperation()
@@ -358,7 +359,7 @@ def main():
 	testGcdCoefficients()
 	testHammingDistance()
 
-	print("Tests successful")
+	print("Tests successful!")
 
 
 if __name__ == "__main__":
