@@ -262,7 +262,53 @@ def getMultiplicativeInverse(number1, prime):
 
 def getLegendreSymbol(number1, prime):
 	legendreSymbol = pow(number1, (prime-1)//2, prime)
-	return legendreSymbol 
+	return legendreSymbol
+
+def getModularSquareRoot(number1, prime):
+	# source: # https://en.wikipedia.org/wiki/Tonelli–Shanks_algorithm
+
+	# Quick solve using property of case when p == 3 (mod 4)
+	if prime % 4 == 3:
+		return pow(number1, (prime+1)//4, prime)
+	
+	# Universal solve for every odd prime (p == 1 (mod 4) & p == 3 (mod 4))
+	else:
+		# Step 1 - find Q and S such that: prime - 1 = Q * 2^S, Q - odd
+		S = 0
+		tmp = prime-1
+		while tmp % 2 == 0:
+			S += 1
+			tmp //= 2
+		Q = (prime-1) // pow(2, S)
+
+		# Step 2 - find quadratic non-residue z in Z_p
+		for i in range(2, prime):
+			if getLegendreSymbol(i, prime) == prime-1:
+				z = i
+				break
+		
+		# Step 3 - loop until algorithm's criteria are met
+		M = S
+		c = pow(z, Q, prime)
+		t = pow(number1, Q, prime)
+		root = pow(number1, (Q+1)//2, prime)
+
+		while True:
+			if t == 0:
+				return 0
+			elif t == 1:
+				return root
+			else:
+				for i in range(1, M):
+					if pow(t, pow(2, i), prime) == 1:
+						tmp = i
+						break
+				
+				b = pow(c, pow(2, M-tmp-1, prime), prime)
+				M = tmp
+				c = pow(b, 2, prime)
+				t = (t * c) % prime
+				root = (root * b) % prime
 
 def getShannonEntropy(bytes1):
 
