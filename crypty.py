@@ -240,6 +240,7 @@ def getGCD(number1, number2):
 
 	return number1
 
+# Find a,b where a*x + b*y = gcd(x,y) and x,y are given
 def getGcdCoefficients(number1, number2):
 
 	if number2 == 0:
