@@ -112,13 +112,24 @@ def base64ToHex(string1):
 def base64ToString(string1):
 	return bytesToString(base64ToBytes(string1))
 
-def hexToString(string1):
-	txt = string1
+def hexToString(hex1):
 	string = ""
-	for i in range(0, len(txt), 2):
-		string += chr( int(f"{txt[i]}{txt[i+1]}", 16) )
+	for i in range(0, len(hex1), 2):
+		string += chr( int(f"{hex1[i]}{hex1[i+1]}", 16) )
 
 	return string
+
+def hexToBytes(hex1):
+	if len(hex1) % 2 != 0:
+		hex1 = "0" + hex1
+
+	tmp = []
+	for i in range(0, len(hex1), 2):
+		left = hex1[i]
+		right = hex1[i+1]
+		tmp.append(int(left, 16)<<4 | int(right, 16))
+
+	return bytearray(tmp)
 
 def stringToHex(string1):
 	txt = string1
@@ -134,17 +145,8 @@ def stringToHex(string1):
 			h += tmp
 	return h
 
-def hexToBytes(hex1):
-	if len(hex1) % 2 != 0:
-		hex1 = "0" + hex1
-
-	tmp = []
-	for i in range(0, len(hex1), 2):
-		left = hex1[i]
-		right = hex1[i+1]
-		tmp.append(int(left, 16)<<4 | int(right, 16))
-
-	return bytearray(tmp)
+def stringToBytes(string1, encoding="utf-8"):
+	return bytearray(string1, encoding)
 
 def bytesToHex(bytes1):	
 	h = ""
@@ -156,15 +158,15 @@ def bytesToHex(bytes1):
 
 	return h	
 
-def stringToBytes(string1, encoding="utf-8"):
-	return bytearray(string1, encoding)
-
 def bytesToString(bytes1):
 	txt = ""
 	for val in bytes1:
 		txt += chr(val)
 
 	return txt
+
+def bytesToInt(bytes1):
+	return int(bytesToHex(bytes1), 16)
 
 def intToBytes(number1):
 	return hexToBytes(hex(number1)[2:])
@@ -174,9 +176,6 @@ def intToHex(number1):
 	if len(h)%2 != 0:
 		h = "0" + h
 	return h
-
-def bytesToInt(bytes1):
-	return int(bytesToHex(bytes1), 16)
 
 def xorStrings(string1, string2, encoding="utf-8"):
 	bytes1 = stringToBytes(string1, encoding)
