@@ -22,25 +22,25 @@ Before I move on to explanation of ****certain methods, at first I would like to
 
 ### Convertion methods
 
-- hexToString(<hex>)        -> <string>
-- hexToBytes(<hex>)         -> <bytes>
-- stringToBytes(<string>)   -> <bytes>
-- stringToHex(<string>)     -> <hex>
-- bytesToString(<bytes>)    -> <string>
-- bytesToHex(<bytes>)       -> <hex>
+- hexToString(\<hex\>)        -> \<string\>
+- hexToBytes(\<hex\>)         -> \<bytes\>
+- stringToBytes(\<string\>)   -> \<bytes\>
+- stringToHex(\<string\>)     -> \<hex\>
+- bytesToString(\<bytes\>)    -> \<string\>
+- bytesToHex(\<bytes\>)       -> \<hex\>
 
 ### Encoding/Decoding methods
 
 Methods below *encode* data given in proper data type into Base64 standard code: 
 
-- stringToBase64(<string>)  -> <string>
-- hexToBase64(<hex>)        -> <string>
-- bytesToBase64(<bytes>)    -> <string>
+- stringToBase64(\<string\>)  -> \<string\>
+- hexToBase64(\<hex\>)        -> \<string\>
+- bytesToBase64(\<bytes\>)    -> \<string\>
 
 Methods below could be used to *decode* data given in Base64 format into chosen data type:
 
-- base64ToString(<string>)  -> <string>
-- base64ToHex(<string>)     -> <hex>
-- base64ToBytes(<string>)   -> <bytes>
+- base64ToString(\<string\>)  -> \<string\>
+- base64ToHex(\<string\>)     -> \<hex\>
+- base64ToBytes(\<string\>)   -> \<bytes\>
 
 ### TODO
