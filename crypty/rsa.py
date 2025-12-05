@@ -56,9 +56,21 @@ class RSA:
         p = primes[0]
         q = primes[1]
         assert isPrime(p) and isPrime(q)
+        assert N == p * q
         e = pow(d, -1, (p-1)*(q-1))
 
         return RSA(N, e, d)
+    
+    @classmethod
+    def import_from_primes(cls, primes: Tuple[int, int], e: int = 65537):
+        p = primes[0]
+        q = primes[1]
+        assert isPrime(p) and isPrime(q)
+        N = p * q
+        d = pow(e, -1, (p-1)*(q-1))
+        
+        return RSA(N, e, d)
+        
 
 def main():
     print("main")
